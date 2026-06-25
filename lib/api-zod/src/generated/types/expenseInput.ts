@@ -6,6 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface HealthStatus {
-  status: string;
+export interface ExpenseInput {
+  amount: number;
+  description: string;
+  date: string;
+  /** @nullable */
+  category?: string | null;
 }

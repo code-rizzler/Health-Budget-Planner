@@ -5,7 +5,11 @@
  * BudgetBite API — AI-powered nutrition and grocery planning
  * OpenAPI spec version: 0.1.0
  */
+import type { DayMeal } from './dayMeal';
 
-export interface HealthStatus {
-  status: string;
+export interface MealPlan {
+  id: number;
+  clerkUserId: string;
+  days: DayMeal[];
+  generatedAt: string;
 }
