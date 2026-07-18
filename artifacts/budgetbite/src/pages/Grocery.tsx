@@ -56,7 +56,7 @@ export function Grocery() {
   }
 
   // Group items by category
-  const groupedItems = plan.items.reduce((acc, item) => {
+  const groupedItems = (plan.items ?? []).reduce((acc, item) => {
     if (!acc[item.category]) acc[item.category] = [];
     acc[item.category].push(item);
     return acc;
