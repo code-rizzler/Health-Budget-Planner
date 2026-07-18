@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { requireAuth, getAuth } from "@clerk/express";
-import { db, mealPlansTable, profilesTable } from "@workspace/db";
+import { db, mealPlansTable, profilesTable, recipesTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import { generateMealPlan } from "../lib/planner";
-import type { DayMeal } from "@workspace/db";
+import type { DayMeal, MealDetail } from "@workspace/db";
 import { logger } from "../lib/logger";
 
 const router = Router();
@@ -31,7 +31,24 @@ router.post("/generate", requireAuth(), async (req, res): Promise<void> => {
     const [profile] = await db.select().from(profilesTable).where(eq(profilesTable.clerkUserId, clerkUserId));
     if (!profile) { res.status(400).json({ error: "Complete your profile first" }); return; }
 
-    const days = generateMealPlan(profile);
+    const rawDays = generateMealPlan(profile);
+
+    // Attach recipeId where meal name matches a seeded recipe
+    const allRecipes = await db.select({ id: recipesTable.id, name: recipesTable.name }).from(recipesTable);
+    const nameToId = new Map(allRecipes.map(r => [r.name.toLowerCase().trim(), r.id]));
+
+    const attachId = (meal: MealDetail): MealDetail => ({
+      ...meal,
+      recipeId: nameToId.get(meal.name.toLowerCase().trim()) ?? null,
+    });
+
+    const days: DayMeal[] = rawDays.map(day => ({
+      ...day,
+      breakfast: attachId(day.breakfast),
+      lunch: attachId(day.lunch),
+      dinner: attachId(day.dinner),
+    }));
+
     const [plan] = await db.insert(mealPlansTable).values({ clerkUserId, days }).returning();
 
     res.json({ ...plan, generatedAt: plan!.generatedAt.toISOString() });
