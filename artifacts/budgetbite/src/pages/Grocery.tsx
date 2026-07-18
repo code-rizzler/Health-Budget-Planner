@@ -7,63 +7,95 @@ import { motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 
-function groceryImageUrl(name: string): string {
-  // Map common Indian grocery items to specific search terms for better results
-  const mappings: Record<string, string> = {
-    "rice": "basmati rice grains",
-    "dal": "lentils dal indian",
-    "toor dal": "toor dal lentils",
-    "moong dal": "moong dal green lentils",
-    "masoor dal": "red lentils masoor",
-    "chana": "chickpeas chana",
-    "rajma": "kidney beans rajma",
-    "paneer": "paneer cottage cheese indian",
-    "chicken": "raw chicken pieces",
-    "mutton": "mutton lamb meat",
-    "fish": "fresh fish market",
-    "eggs": "fresh eggs",
-    "milk": "milk glass bottle",
-    "curd": "yogurt curd bowl",
-    "ghee": "ghee clarified butter jar",
-    "oil": "cooking oil bottle",
-    "onion": "red onions",
-    "tomato": "red tomatoes",
-    "potato": "potatoes",
-    "spinach": "fresh spinach leaves",
-    "cauliflower": "cauliflower",
-    "peas": "green peas",
-    "carrot": "carrots",
-    "ginger": "fresh ginger root",
-    "garlic": "garlic cloves",
-    "wheat flour": "wheat flour atta",
-    "bread": "bread loaf",
-    "oats": "rolled oats",
-    "poha": "poha flattened rice",
-    "semolina": "semolina sooji",
-    "peanuts": "peanuts groundnuts",
-    "nuts": "mixed nuts almonds",
-    "apple": "fresh apples",
-    "banana": "bananas",
-    "cumin": "cumin seeds spice",
-    "turmeric": "turmeric powder spice",
-    "coriander": "coriander seeds spice",
-    "chili": "red chili peppers",
-    "salt": "sea salt",
-    "sugar": "sugar bowl",
-    "tea": "indian tea chai",
-    "coffee": "coffee beans",
-  };
+// Curated Unsplash photo IDs for common Indian grocery items
+const GROCERY_PHOTO_IDS: Array<[string, string]> = [
+  ["rice",        "1536304993881-ff86d42006d5"],
+  ["basmati",     "1536304993881-ff86d42006d5"],
+  ["dal",         "1603105037880-880cd4edfb0e"],
+  ["lentil",      "1603105037880-880cd4edfb0e"],
+  ["moong",       "1603105037880-880cd4edfb0e"],
+  ["toor",        "1603105037880-880cd4edfb0e"],
+  ["masoor",      "1603105037880-880cd4edfb0e"],
+  ["chana",       "1628088035697-d0e7c5dab32b"],
+  ["rajma",       "1558818106-7e6b4b0a1c1e"],
+  ["kidney",      "1558818106-7e6b4b0a1c1e"],
+  ["chickpea",    "1628088035697-d0e7c5dab32b"],
+  ["paneer",      "1631452180537-47c4c5f5e6e4"],
+  ["cottage",     "1631452180537-47c4c5f5e6e4"],
+  ["chicken",     "1604503468506-a8da13d82791"],
+  ["mutton",      "1529692236671-f1f6cf9683ba"],
+  ["lamb",        "1529692236671-f1f6cf9683ba"],
+  ["fish",        "1519708227418-a8effd61523a"],
+  ["prawn",       "1565680018434-b513d5e5fd47"],
+  ["egg",         "1587486913049-53fc88980cfc"],
+  ["milk",        "1550583724-b2692b85b150"],
+  ["curd",        "1559181567-c3190b6d9f69"],
+  ["yogurt",      "1559181567-c3190b6d9f69"],
+  ["ghee",        "1596458695500-1e90d7668f50"],
+  ["butter",      "1589985270826-4b7bb135bc9d"],
+  ["oil",         "1474979078780-aaadca8dd3f0"],
+  ["onion",       "1508747703725-719777637510"],
+  ["tomato",      "1471194402529-8555a2604e90"],
+  ["potato",      "1518977676601-b53f82aba655"],
+  ["aloo",        "1518977676601-b53f82aba655"],
+  ["spinach",     "1576045057995-568f77b37a08"],
+  ["palak",       "1576045057995-568f77b37a08"],
+  ["cauliflower", "1568584393693-b8481c6b65e1"],
+  ["gobi",        "1568584393693-b8481c6b65e1"],
+  ["pea",         "1612257399117-93a89c2e4e84"],
+  ["matar",       "1612257399117-93a89c2e4e84"],
+  ["carrot",      "1447175008436-054170537668"],
+  ["ginger",      "1509822929464-e4a8f5f12bae"],
+  ["garlic",      "1587411684-a1e97ddd6a49"],
+  ["capsicum",    "1563565375-f3fdfdbefa83"],
+  ["pepper",      "1563565375-f3fdfdbefa83"],
+  ["brinjal",     "1473093295043-cae9ef229628"],
+  ["baingan",     "1473093295043-cae9ef229628"],
+  ["wheat",       "1559181567-c3190b6d9f69"],
+  ["atta",        "1574323347407-f5e1ad6962b3"],
+  ["flour",       "1574323347407-f5e1ad6962b3"],
+  ["bread",       "1509440159596-0249088772ff"],
+  ["oat",         "1543610892-0b1f7b7f8fca"],
+  ["poha",        "1536304993881-ff86d42006d5"],
+  ["semolina",    "1574323347407-f5e1ad6962b3"],
+  ["sooji",       "1574323347407-f5e1ad6962b3"],
+  ["peanut",      "1567892460931-f5e40c3e2bda"],
+  ["nut",         "1567892460931-f5e40c3e2bda"],
+  ["almond",      "1567892460931-f5e40c3e2bda"],
+  ["apple",       "1568702846914-96b305d2aaeb"],
+  ["banana",      "1528825871115-3581a5387919"],
+  ["mango",       "1571493516785-87c75f79e0f8"],
+  ["lemon",       "1574856326825-2d88e3f67ffa"],
+  ["cumin",       "1596040033229-a9821ebd058d"],
+  ["jeera",       "1596040033229-a9821ebd058d"],
+  ["turmeric",    "1615485925763-86db9d3f2a0a"],
+  ["haldi",       "1615485925763-86db9d3f2a0a"],
+  ["coriander",   "1596040033229-a9821ebd058d"],
+  ["chili",       "1547592180-85f173990554"],
+  ["mirchi",      "1547592180-85f173990554"],
+  ["salt",        "1558618666-fcd25c85cd64"],
+  ["sugar",       "1584483720412-ce931f4aefa8"],
+  ["jaggery",     "1584483720412-ce931f4aefa8"],
+  ["tea",         "1556679343-c7306c1976bc"],
+  ["chai",        "1556679343-c7306c1976bc"],
+  ["coffee",      "1495474472287-4d71bcdd2085"],
+  ["mustard",     "1596040033229-a9821ebd058d"],
+];
 
+const FALLBACK_FOOD_IDS = [
+  "1546069901-5b7f7c2fbe9a",
+  "1512621776951-a57141f2eefd",
+  "1493770348161-369560ae357d",
+  "1540189549336-e6e99eb4b951",
+];
+
+function groceryImageUrl(name: string, index: number): string {
   const lower = name.toLowerCase();
-  let searchTerm = name;
-  for (const [key, val] of Object.entries(mappings)) {
-    if (lower.includes(key)) {
-      searchTerm = val;
-      break;
-    }
-  }
-
-  return `https://source.unsplash.com/featured/400x300/?${encodeURIComponent(searchTerm)},food`;
+  const match = GROCERY_PHOTO_IDS.find(([key]) => lower.includes(key));
+  const photoId = match
+    ? match[1]
+    : FALLBACK_FOOD_IDS[index % FALLBACK_FOOD_IDS.length];
+  return `https://images.unsplash.com/photo-${photoId}?w=400&h=300&fit=crop&auto=format`;
 }
 
 export function Grocery() {
@@ -163,13 +195,15 @@ export function Grocery() {
                 >
                   {/* Background food image */}
                   <img
-                    src={groceryImageUrl(item.name)}
+                    src={groceryImageUrl(item.name, i)}
                     alt={item.name}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        `https://source.unsplash.com/featured/400x300/?food,grocery,${encodeURIComponent(item.category)}`;
+                      const el = e.target as HTMLImageElement;
+                      const fallbackId = FALLBACK_FOOD_IDS[(i + 1) % FALLBACK_FOOD_IDS.length];
+                      el.src = `https://images.unsplash.com/photo-${fallbackId}?w=400&h=300&fit=crop&auto=format`;
+                      el.onerror = null;
                     }}
                   />
 
