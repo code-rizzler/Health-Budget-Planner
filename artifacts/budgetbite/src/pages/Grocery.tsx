@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { SiInstacart, SiSwiggy } from "react-icons/si";
-import { ShoppingBag, ShoppingCart } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { queryClient } from "@/lib/queryClient";
 
 export function Grocery() {
@@ -74,45 +73,15 @@ export function Grocery() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="glass-card bg-primary/5 border-primary/20">
-          <CardContent className="p-6 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Estimated Total</p>
-              <h2 className="text-3xl font-bold mt-1 text-primary">₹{plan.totalCost}</h2>
-            </div>
-            <ShoppingBag className="h-10 w-10 text-primary opacity-50" />
-          </CardContent>
-        </Card>
-        
-        <Card className="glass-card">
-          <CardContent className="p-6">
-            <p className="text-sm font-medium text-muted-foreground mb-4">Quick Shop</p>
-            <div className="flex gap-2 flex-wrap">
-              <Button variant="secondary" className="flex-1 min-w-[120px]" asChild>
-                <a href="#" onClick={(e) => { e.preventDefault(); toast({ description: "Integration coming soon" }) }}>
-                  <ShoppingCart className="mr-2 h-4 w-4" /> Blinkit
-                </a>
-              </Button>
-              <Button variant="secondary" className="flex-1 min-w-[120px]" asChild>
-                <a href="#" onClick={(e) => { e.preventDefault(); toast({ description: "Integration coming soon" }) }}>
-                  <SiSwiggy className="mr-2 h-4 w-4 text-[#fc8019]" /> Instamart
-                </a>
-              </Button>
-              <Button variant="secondary" className="flex-1 min-w-[120px]" asChild>
-                <a href="#" onClick={(e) => { e.preventDefault(); toast({ description: "Integration coming soon" }) }}>
-                  Zepto
-                </a>
-              </Button>
-              <Button variant="secondary" className="flex-1 min-w-[120px]" asChild>
-                <a href="#" onClick={(e) => { e.preventDefault(); toast({ description: "Integration coming soon" }) }}>
-                  <SiInstacart className="mr-2 h-4 w-4 text-[#003d29]" /> BigBasket
-                </a>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="glass-card bg-primary/5 border-primary/20">
+        <CardContent className="p-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">Estimated Total</p>
+            <h2 className="text-3xl font-bold mt-1 text-primary">₹{plan.totalCost}</h2>
+          </div>
+          <ShoppingBag className="h-10 w-10 text-primary opacity-50" />
+        </CardContent>
+      </Card>
 
       <div className="space-y-6">
         {Object.entries(groupedItems).map(([category, items], idx) => (
