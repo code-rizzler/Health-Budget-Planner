@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, CalendarDays, ShoppingBag, Wallet, BookOpen, BarChart3, Settings, Menu, LogOut } from "lucide-react";
+import { LayoutDashboard, CalendarDays, ShoppingBag, Wallet, BookOpen, BarChart3, Settings, Menu, LogOut, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useClerk } from "@clerk/react";
+import { useTheme } from "@/components/theme-provider";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -13,6 +14,20 @@ const navigation = [
   { name: "Recipes", href: "/recipes", icon: BookOpen },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
 ];
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  return (
+    <button
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-secondary hover:text-foreground"
+    >
+      {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      {isDark ? "Light Mode" : "Dark Mode"}
+    </button>
+  );
+}
 
 export function Sidebar() {
   const [location] = useLocation();
@@ -47,14 +62,15 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-border mt-auto">
+      <div className="p-4 border-t border-border mt-auto space-y-1">
+        <ThemeToggle />
         <Link href="/admin">
           <span className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-secondary hover:text-foreground">
             <Settings className="h-5 w-5" />
             Admin
           </span>
         </Link>
-        <button onClick={handleSignOut} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-destructive/10 hover:text-destructive mt-1">
+        <button onClick={handleSignOut} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
           <LogOut className="h-5 w-5" />
           Sign Out
         </button>
@@ -67,6 +83,8 @@ export function MobileNav() {
   const [location] = useLocation();
   const [open, setOpen] = useState(false);
   const { signOut } = useClerk();
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   const handleSignOut = () => signOut({ redirectUrl: "/" });
 
@@ -79,44 +97,50 @@ export function MobileNav() {
         <h1 className="text-lg font-bold tracking-tight text-foreground">BudgetBite</h1>
       </div>
 
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Menu className="h-6 w-6" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0 pt-10 flex flex-col">
-          <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
-            {navigation.map((item) => {
-              const isActive = location === item.href || location.startsWith(`${item.href}/`);
-              return (
-                <Link key={item.name} href={item.href} onClick={() => setOpen(false)}>
-                  <span className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer ${
-                    isActive 
-                      ? "bg-primary/10 text-primary font-medium" 
-                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                  }`}>
-                    <item.icon className={`h-5 w-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                    {item.name}
-                  </span>
-                </Link>
-              );
-            })}
-          </nav>
-          <div className="p-4 border-t border-border mt-auto">
-            <Link href="/admin" onClick={() => setOpen(false)}>
-              <span className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-secondary hover:text-foreground">
-                <Settings className="h-5 w-5" />
-                Admin
-              </span>
-            </Link>
-            <button onClick={handleSignOut} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-destructive/10 hover:text-destructive mt-1">
-              <LogOut className="h-5 w-5" />
-              Sign Out
-            </button>
-          </div>
-        </SheetContent>
-      </Sheet>
+      <div className="flex items-center gap-1">
+        <Button variant="ghost" size="icon" onClick={() => setTheme(isDark ? "light" : "dark")}>
+          {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </Button>
+
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0 pt-10 flex flex-col">
+            <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
+              {navigation.map((item) => {
+                const isActive = location === item.href || location.startsWith(`${item.href}/`);
+                return (
+                  <Link key={item.name} href={item.href} onClick={() => setOpen(false)}>
+                    <span className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer ${
+                      isActive 
+                        ? "bg-primary/10 text-primary font-medium" 
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}>
+                      <item.icon className={`h-5 w-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                      {item.name}
+                    </span>
+                  </Link>
+                );
+              })}
+            </nav>
+            <div className="p-4 border-t border-border mt-auto space-y-1">
+              <Link href="/admin" onClick={() => setOpen(false)}>
+                <span className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-secondary hover:text-foreground">
+                  <Settings className="h-5 w-5" />
+                  Admin
+                </span>
+              </Link>
+              <button onClick={handleSignOut} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
+                <LogOut className="h-5 w-5" />
+                Sign Out
+              </button>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
     </div>
   );
 }

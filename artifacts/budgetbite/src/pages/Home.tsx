@@ -1,13 +1,27 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
+import { Sun, Moon } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 
 export function Home() {
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden flex flex-col items-center justify-center">
       {/* Background gradients */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/20 blur-[120px] rounded-full pointer-events-none" />
-      
+
+      {/* Theme toggle — top right */}
+      <button
+        onClick={() => setTheme(isDark ? "light" : "dark")}
+        className="absolute top-5 right-5 p-2.5 rounded-xl border border-border bg-background/60 backdrop-blur hover:bg-secondary transition-colors z-10"
+        aria-label="Toggle theme"
+      >
+        {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      </button>
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
