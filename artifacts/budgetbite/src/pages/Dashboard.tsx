@@ -182,7 +182,9 @@ export function Dashboard() {
               { type: 'Breakfast', meal: todayMeals.breakfast },
               { type: 'Lunch', meal: todayMeals.lunch },
               { type: 'Dinner', meal: todayMeals.dinner }
-            ].map(({ type, meal }, idx) => (
+            ].map(({ type, meal }, idx) => {
+              if (!meal) return null;
+              return (
               <motion.div
                 key={type}
                 initial={{ opacity: 0, y: 10 }}
@@ -210,7 +212,8 @@ export function Dashboard() {
                   </Card>
                 </Link>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
