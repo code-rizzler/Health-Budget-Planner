@@ -14,6 +14,7 @@ const navigation = [
   { name: "Recipes", href: "/recipes", icon: BookOpen },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
 ];
+// Admin link intentionally removed from user nav — access via /admin directly
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -64,12 +65,6 @@ export function Sidebar() {
 
       <div className="p-4 border-t border-border mt-auto space-y-1">
         <ThemeToggle />
-        <Link href="/admin">
-          <span className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-secondary hover:text-foreground">
-            <Settings className="h-5 w-5" />
-            Admin
-          </span>
-        </Link>
         <button onClick={handleSignOut} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
           <LogOut className="h-5 w-5" />
           Sign Out
@@ -127,12 +122,6 @@ export function MobileNav() {
               })}
             </nav>
             <div className="p-4 border-t border-border mt-auto space-y-1">
-              <Link href="/admin" onClick={() => setOpen(false)}>
-                <span className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-secondary hover:text-foreground">
-                  <Settings className="h-5 w-5" />
-                  Admin
-                </span>
-              </Link>
               <button onClick={handleSignOut} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
                 <LogOut className="h-5 w-5" />
                 Sign Out
