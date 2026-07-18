@@ -158,6 +158,10 @@ Change the password by setting the `VITE_ADMIN_PASSWORD` environment variable.
 | `SESSION_SECRET` | Yes | Random string for session signing |
 | `VITE_ADMIN_PASSWORD` | No | Admin panel password (default: `budgetbite@admin`) |
 
+## Author
+
+Developed by **Shubham Kumar Rajwar**
+
 ## License
 
-MIT
+MIT &copy; 2025 Shubham Kumar Rajwar

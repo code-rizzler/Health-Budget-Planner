@@ -69,6 +69,9 @@ export function Sidebar() {
           <LogOut className="h-5 w-5" />
           Sign Out
         </button>
+        <p className="text-[11px] text-muted-foreground/60 text-center pt-2 select-none">
+          &copy; {new Date().getFullYear()} Shubham Kumar Rajwar
+        </p>
       </div>
     </div>
   );
@@ -126,6 +129,9 @@ export function MobileNav() {
                 <LogOut className="h-5 w-5" />
                 Sign Out
               </button>
+              <p className="text-[11px] text-muted-foreground/60 text-center pt-2 select-none">
+                &copy; {new Date().getFullYear()} Shubham Kumar Rajwar
+              </p>
             </div>
           </SheetContent>
         </Sheet>
