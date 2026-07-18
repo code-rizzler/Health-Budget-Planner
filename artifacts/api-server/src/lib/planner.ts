@@ -115,10 +115,10 @@ export function generateMealPlan(profile: Profile): DayMeal[] {
     date.setDate(today.getDate() + day - 1);
     const dateStr = date.toISOString().split("T")[0];
 
-    const breakfast = adjustCalories(pick(breakfasts, day * 3), profile.goal);
-    const lunch = adjustCalories(pick(lunches, day * 7 + 1), profile.goal);
-    const dinner = adjustCalories(pick(dinners, day * 5 + 2), profile.goal);
-    const snack = pick(SNACKS, day * 2);
+    const breakfast = adjustCalories(pick(breakfasts, day - 1), profile.goal);
+    const lunch = adjustCalories(pick(lunches, day + 2), profile.goal);
+    const dinner = adjustCalories(pick(dinners, day + 5), profile.goal);
+    const snack = pick(SNACKS, day - 1);
 
     const totalCalories = breakfast.calories + lunch.calories + dinner.calories + snack.calories;
     const totalProtein = breakfast.protein + lunch.protein + dinner.protein + snack.protein;
