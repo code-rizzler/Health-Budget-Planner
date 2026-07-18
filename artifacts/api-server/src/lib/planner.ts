@@ -74,8 +74,34 @@ const SNACKS: MealDetail[] = [
   { name: "Sprouts Salad", calories: 130, protein: 8, carbs: 20, fat: 2, cookingTime: 10, recipeId: null },
 ];
 
-function pick<T>(arr: T[], idx: number): T {
-  return arr[idx % arr.length];
+// Seeded PRNG (mulberry32) so each call to generateMealPlan gives a fresh order
+function seededRng(seed: number) {
+  let s = seed >>> 0;
+  return () => {
+    s += 0x6d2b79f5;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Fisher-Yates shuffle using the given rng
+function shuffle<T>(arr: T[], rng: () => number): T[] {
+  const out = [...arr];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+// Build a 30-item sequence by shuffling the pool in chunks so every option appears before repeating
+function buildSequence<T>(pool: T[], count: number, rng: () => number): T[] {
+  const result: T[] = [];
+  while (result.length < count) {
+    result.push(...shuffle(pool, rng));
+  }
+  return result.slice(0, count);
 }
 
 function getBreakfasts(diet: string) {
@@ -103,9 +129,12 @@ function adjustCalories(meal: MealDetail, goal: string): MealDetail {
 }
 
 export function generateMealPlan(profile: Profile): DayMeal[] {
-  const breakfasts = getBreakfasts(profile.dietPreference);
-  const lunches = getLunches(profile.dietPreference);
-  const dinners = getDinners(profile.dietPreference);
+  const rng = seededRng(Date.now());
+
+  const breakfastSeq = buildSequence(getBreakfasts(profile.dietPreference), 30, rng);
+  const lunchSeq     = buildSequence(getLunches(profile.dietPreference),    30, rng);
+  const dinnerSeq    = buildSequence(getDinners(profile.dietPreference),    30, rng);
+  const snackSeq     = buildSequence(SNACKS,                               30, rng);
 
   const today = new Date();
   const days: DayMeal[] = [];
@@ -115,10 +144,10 @@ export function generateMealPlan(profile: Profile): DayMeal[] {
     date.setDate(today.getDate() + day - 1);
     const dateStr = date.toISOString().split("T")[0];
 
-    const breakfast = adjustCalories(pick(breakfasts, day - 1), profile.goal);
-    const lunch = adjustCalories(pick(lunches, day + 2), profile.goal);
-    const dinner = adjustCalories(pick(dinners, day + 5), profile.goal);
-    const snack = pick(SNACKS, day - 1);
+    const breakfast = adjustCalories(breakfastSeq[day - 1], profile.goal);
+    const lunch     = adjustCalories(lunchSeq[day - 1],     profile.goal);
+    const dinner    = adjustCalories(dinnerSeq[day - 1],    profile.goal);
+    const snack     = snackSeq[day - 1];
 
     const totalCalories = breakfast.calories + lunch.calories + dinner.calories + snack.calories;
     const totalProtein = breakfast.protein + lunch.protein + dinner.protein + snack.protein;
